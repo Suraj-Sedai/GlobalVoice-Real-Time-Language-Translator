@@ -1,15 +1,34 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const HomePage = () => {
     const [inputText, setInputText] = useState("");
     const [selectedLanguage, setSelectedLanguage] = useState("Spanish");
     const [translatedText, setTranslatedText] = useState("");
+    const [isLoading, setIsLoading] = useState(false);  // To track the loading state
+    const [errorMessage, setErrorMessage] = useState("");  // To track error messages
 
-    const handleTranslate = () => {
+    const handleTranslate = async () => {
         console.log("Translating:", inputText, "to", selectedLanguage);
-        
-        // Simulate translation by appending " (Translated)" for now
-        setTranslatedText(`${inputText} (Translated to ${selectedLanguage})`);
+        setIsLoading(true);  // Set loading state to true when the request is initiated
+        setErrorMessage("");  // Clear any previous error message
+
+        try {
+            // Send a POST request to the backend API
+            const response = await axios.post("http://localhost:8000/api/translate/", {
+                input_text: inputText,
+                target_language: selectedLanguage,
+            });
+
+            console.log("Backend response:", response.data);  // Log the backend response
+            // Set translated text received from the backend
+            setTranslatedText(response.data.translated_text);
+        } catch (error) {
+            console.error("Error translating text:", error);
+            setErrorMessage("Error translating text. Please try again.");
+        } finally {
+            setIsLoading(false);  // Set loading state to false after the request is completed
+        }
     };
 
     return (
@@ -38,7 +57,12 @@ const HomePage = () => {
                     <option value="Hindi">Hindi</option>
                 </select>
             </div>
-            <button onClick={handleTranslate}>Translate</button>
+            <button onClick={handleTranslate} disabled={isLoading}>
+                {isLoading ? "Translating..." : "Translate"}
+            </button>
+
+            {/* Display error message */}
+            {errorMessage && <div className="error-message">{errorMessage}</div>}
 
             {/* Display Translated Text */}
             {translatedText && (
