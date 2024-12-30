@@ -1,0 +1,87 @@
+/* Body */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Textarea */
+.text_area {
+    width: 100%;
+    max-width: 350px;
+    height: 120px;
+    padding: 12px;
+    font-size: 18px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    resize: none;
+    transition: border 0.3s ease;
+}
+
+.text_area:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+/* Select Dropdown */
+.select {
+    width: 100%;
+    max-width: 350px;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: border 0.3s ease;
+}
+
+.select:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+/* Button */
+button {
+    padding: 12px 30px;
+    font-size: 18px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Container */
+.translated-text {
+    text-align: center;
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+}
+
+/* Translated Text */
+h2 {
+    color: #007BFF;
+}
+
+p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #555;
+}

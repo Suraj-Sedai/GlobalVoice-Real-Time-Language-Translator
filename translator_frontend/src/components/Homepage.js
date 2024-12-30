@@ -3,39 +3,31 @@ import React, { useState } from "react";
 const HomePage = () => {
     const [inputText, setInputText] = useState("");
     const [selectedLanguage, setSelectedLanguage] = useState("Spanish");
+    const [translatedText, setTranslatedText] = useState("");
 
     const handleTranslate = () => {
         console.log("Translating:", inputText, "to", selectedLanguage);
-        // Add translation functionality here
+        
+        // Simulate translation by appending " (Translated)" for now
+        setTranslatedText(`${inputText} (Translated to ${selectedLanguage})`);
     };
 
     return (
-        <div style={{ textAlign: "center", marginTop: "50px" }}>
+        <div className="container">
             <h1>Real-Time Language Translator</h1>
             <div>
                 <textarea
+                    className="text_area"
                     placeholder="Enter text to translate..."
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
-                    style={{
-                        width: "300px",
-                        height: "100px",
-                        marginBottom: "20px",
-                        padding: "10px",
-                        fontSize: "16px",
-                    }}
                 ></textarea>
             </div>
             <div>
                 <select
+                    className="select"
                     value={selectedLanguage}
                     onChange={(e) => setSelectedLanguage(e.target.value)}
-                    style={{
-                        width: "200px",
-                        padding: "10px",
-                        fontSize: "16px",
-                        marginBottom: "20px",
-                    }}
                 >
                     <option value="Spanish">Spanish</option>
                     <option value="French">French</option>
@@ -46,20 +38,15 @@ const HomePage = () => {
                     <option value="Hindi">Hindi</option>
                 </select>
             </div>
-            <button
-                onClick={handleTranslate}
-                style={{
-                    padding: "10px 20px",
-                    fontSize: "16px",
-                    backgroundColor: "#007BFF",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                }}
-            >
-                Translate
-            </button>
+            <button onClick={handleTranslate}>Translate</button>
+
+            {/* Display Translated Text */}
+            {translatedText && (
+                <div className="translated-text">
+                    <h2>Translated Text:</h2>
+                    <p>{translatedText}</p>
+                </div>
+            )}
         </div>
     );
 };
