@@ -5,31 +5,22 @@ const HomePage = () => {
     const [inputText, setInputText] = useState("");
     const [selectedLanguage, setSelectedLanguage] = useState("Spanish");
     const [translatedText, setTranslatedText] = useState("");
-    const [isLoading, setIsLoading] = useState(false);  // To track the loading state
-    const [errorMessage, setErrorMessage] = useState("");  // To track error messages
+    const [isLoading, setIsLoading] = useState(false);  // Tracks the loading state
+    const [errorMessage, setErrorMessage] = useState("");  // Tracks error messages
 
     const handleTranslate = async () => {
-        console.log("Translating:", inputText, "to", selectedLanguage);
-        setIsLoading(true);  // Set loading state to true when the request is initiated
-        setErrorMessage("");  // Clear any previous error message
-
         try {
-            // Send a POST request to the backend API
             const response = await axios.post("http://localhost:8000/api/translate/", {
-                input_text: inputText,
-                target_language: selectedLanguage,
+                input_text: inputText,         // Input text from user
+                target_language: selectedLanguage, // Target language
             });
-
-            console.log("Backend response:", response.data);  // Log the backend response
-            // Set translated text received from the backend
             setTranslatedText(response.data.translated_text);
         } catch (error) {
-            console.error("Error translating text:", error);
+            console.error("Error translating text:", error.response || error);
             setErrorMessage("Error translating text. Please try again.");
-        } finally {
-            setIsLoading(false);  // Set loading state to false after the request is completed
         }
     };
+    
 
     return (
         <div className="container">
