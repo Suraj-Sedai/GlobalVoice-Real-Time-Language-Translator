@@ -13,7 +13,7 @@ const HomePage = () => {
             const response = await axios.post("http://localhost:8000/api/translate/", {
                 input_text: inputText,         // Input text from user
                 target_language: selectedLanguage, // Target language
-            });
+            });    
             setTranslatedText(response.data.translated_text);
         } catch (error) {
             console.error("Error translating text:", error.response || error);
