@@ -4,33 +4,39 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from transformers import pipeline
 
-# Load translation pipelines
-pipelines = {
-    "chinese": pipeline("translation_en_to_zh", model="Helsinki-NLP/opus-mt-en-zh"),
-    "french": pipeline("translation_en_to_fr", model="Helsinki-NLP/opus-mt-en-fr"),
-    # Add more language mappings here as needed
-}
+import openai
+
+# Set up API key
+openai.api_key = "your_openai_api_key"
+
+def translate_text(input_text, target_language):
+    prompt = f"Translate the following text into {target_language}: {input_text}"
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response['choices'][0]['message']['content']
 
 @api_view(['POST'])
 def translate(request):
     input_text = request.data.get('input_text')
     target_language = request.data.get('target_language')
     print(f"Received input_text: {input_text}, target_language: {target_language}")
+    translation = translate_text(input_text, target_language)
+    translated_text = translation[0]['translation_text']
 
-    if not input_text or not target_language:
-        return Response({"error": "Missing input_text or target_language"}, status=status.HTTP_400_BAD_REQUEST)
+    print(f"Translated text: {translated_text}")
+    return Response({"translated_text": translated_text})
 
-    # Check if target language is supported
-    translator = pipelines.get(target_language.lower())
-    if not translator:
-        return Response({"error": f"Unsupported target language: {target_language}"}, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        # Perform translation
-        translation = translator(input_text)
-        translated_text = translation[0]['translation_text']
-        print(f"Translated text: {translated_text}")
-        return Response({"translated_text": translated_text})
-    except Exception as e:
-        print(f"Error during translation: {e}")
-        return Response({"error": "Translation failed. Please try again."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # try:
+    #     # Perform translation
+    #     translation = translate_text(input_text, target_language)
+    #     translated_text = translation[0]['translation_text']
+    #     print(f"Translated text: {translated_text}")
+    #     return Response({"translated_text": translated_text})
+    # except Exception as e:
+    #     print(f"Error during translation: {e}")
+    #     return Response({"error": "Translation failed. Please try again."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
