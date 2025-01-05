@@ -8,7 +8,7 @@ from transformers import pipeline
 pipelines = {
     "chinese": pipeline("translation_en_to_zh", model="Helsinki-NLP/opus-mt-en-zh"),
     "french": pipeline("translation_en_to_fr", model="Helsinki-NLP/opus-mt-en-fr"), 
-    "spanish": pipeline("translation_en_to_es", model="Helsinki-NLP/opus-mt-en-es"),
+    "spanish": pipeline("translation_es_to_en", model="Helsinki-NLP/opus-mt-es-en"),
     "hindi": pipeline("translation_en_to_hi", model="Helsinki-NLP/opus-mt-en-hi"),
     "italian": pipeline("translation_en_to_it", model="Helsinki-NLP/opus-mt-en-it"),
     "german": pipeline("translation_en_to_de", model="Helsinki-NLP/opus-mt-en-de"),
