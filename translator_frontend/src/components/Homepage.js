@@ -41,11 +41,18 @@ const HomePage = () => {
                 >
                     <option value="Spanish">Spanish</option>
                     <option value="French">French</option>
-                    <option value="German">German</option>
-                    <option value="Italian">Italian</option>
                     <option value="Chinese">Chinese</option>
-                    <option value="Japanese">Japanese</option>
                     <option value="Hindi">Hindi</option>
+                    <option value="Italian">Italian</option>
+                    <option value="German">German</option>
+
+                    {/**
+                    <option value="Japanese">Japanese</option>
+                    <option value="Nepali">Nepali</option>
+                     * 
+                     */}
+
+
                 </select>
             </div>
             <button onClick={handleTranslate} disabled={isLoading}>
