@@ -3,70 +3,116 @@ import axios from "axios";
 
 const HomePage = () => {
     const [inputText, setInputText] = useState("");
-    const [selectedLanguage, setSelectedLanguage] = useState("Spanish");
+    const [sourceLanguage, setSourceLanguage] = useState("English");
+    const [targetLanguage, setTargetLanguage] = useState("Spanish");
     const [translatedText, setTranslatedText] = useState("");
-    const [isLoading, setIsLoading] = useState(false);  // Tracks the loading state
-    const [errorMessage, setErrorMessage] = useState("");  // Tracks error messages
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [activeTab, setActiveTab] = useState("text"); // "text" or "speech"
+
+    const languages = ["English", "Spanish", "French", "Chinese", "Hindi", "Italian", "German", "Nepali"];
 
     const handleTranslate = async () => {
+        setIsLoading(true);
+        setErrorMessage("");
+        setTranslatedText("");
+
         try {
             const response = await axios.post("http://localhost:8000/api/translate/", {
-                input_text: inputText,         // Input text from user
-                target_language: selectedLanguage, // Target language
-            });    
+                input_text: inputText,
+                source_language: sourceLanguage,
+                target_language: targetLanguage,
+            });
             setTranslatedText(response.data.translated_text);
         } catch (error) {
             console.error("Error translating text:", error.response || error);
             setErrorMessage("Error translating text. Please try again.");
+        } finally {
+            setIsLoading(false);
         }
     };
-    
 
     return (
-        <div className="container">
-            <h1>Real-Time Language Translator</h1>
-            <div>
-                <textarea
-                    className="text_area"
-                    placeholder="Enter text to translate..."
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                ></textarea>
-            </div>
-            <div>
-                <select
-                    className="select"
-                    value={selectedLanguage}
-                    onChange={(e) => setSelectedLanguage(e.target.value)}
+        <div className="home-container">
+            {/* Navigation between tabs */}
+            <div className="tab-selector">
+                <button
+                    className={`tab-button ${activeTab === "text" ? "active" : ""}`}
+                    onClick={() => setActiveTab("text")}
                 >
-                    <option value="Spanish">Spanish</option>
-                    <option value="French">French</option>
-                    <option value="Chinese">Chinese</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="Italian">Italian</option>
-                    <option value="German">German</option>
-
-                    {/**
-                    <option value="Japanese">Japanese</option>
-                    <option value="Nepali">Nepali</option>
-                     * 
-                     */}
-
-
-                </select>
+                    Text Translator
+                </button>
+                <button
+                    className={`tab-button ${activeTab === "speech" ? "active" : ""}`}
+                    onClick={() => setActiveTab("speech")}
+                >
+                    Speech Translator
+                </button>
             </div>
-            <button onClick={handleTranslate} disabled={isLoading}>
-                {isLoading ? "Translating..." : "Translate"}
-            </button>
 
-            {/* Display error message */}
-            {errorMessage && <div className="error-message">{errorMessage}</div>}
-
-            {/* Display Translated Text */}
-            {translatedText && (
-                <div className="translated-text">
-                    <h2>Translated Text:</h2>
-                    <p>{translatedText}</p>
+            {/* Conditional Rendering of Content */}
+            {activeTab === "text" ? (
+                <div className="text-tab">
+                    <h1>Text Translator</h1>
+                    <p className="subtitle">Translate from one language to another seamlessly</p>
+                    <div className="form-group">
+                        <textarea
+                            className="text_area"
+                            placeholder="Enter text to translate..."
+                            value={inputText}
+                            onChange={(e) => setInputText(e.target.value)}
+                        ></textarea>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="sourceLanguage">From:</label>
+                        <select
+                            className="select"
+                            id="sourceLanguage"
+                            value={sourceLanguage}
+                            onChange={(e) => setSourceLanguage(e.target.value)}
+                        >
+                            {languages.map((lang) => (
+                                <option key={lang} value={lang}>
+                                    {lang}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="targetLanguage">To:</label>
+                        <select
+                            className="select"
+                            id="targetLanguage"
+                            value={targetLanguage}
+                            onChange={(e) => setTargetLanguage(e.target.value)}
+                        >
+                            {languages.map((lang) => (
+                                <option key={lang} value={lang}>
+                                    {lang}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <button onClick={handleTranslate} disabled={isLoading}>
+                        {isLoading ? "Translating..." : "Translate"}
+                    </button>
+                    {errorMessage && <div className="error-message">{errorMessage}</div>}
+                    {translatedText && (
+                        <div className="translated-text">
+                            <h2>Translated Text:</h2>
+                            <p>{translatedText}</p>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="speech-tab">
+                    <h1>Speech-to-Speech Translator</h1>
+                    <p className="subtitle">Speak in one language and hear the translation</p>
+                    <button className="record-btn">🎤 Start Speaking</button>
+                    <div className="speech-output">
+                        <h2>Translation:</h2>
+                        <p>Output speech will appear here...</p>
+                    </div>
                 </div>
             )}
         </div>
