@@ -2,10 +2,10 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
-from transformers import pipeline
+# from transformers import pipeline
 from googletrans import Translator
 
-
+ 
 # # Load translation pipelines for different languages
 # pipelines = {
 #     "chinese": pipeline("translation_en_to_zh", model="Helsinki-NLP/opus-mt-en-zh"),
@@ -15,19 +15,27 @@ from googletrans import Translator
 #     "italian": pipeline("translation_en_to_it", model="Helsinki-NLP/opus-mt-en-it"),
 #     "german": pipeline("translation_en_to_de", model="Helsinki-NLP/opus-mt-en-de"),
 # }
-
 @api_view(['POST'])
 def translate(request):
     """
-    Handles translation requests. Expects input_text and target_language in the request body.
+    Handles translation requests. Expects input_text, source_language, and target_language in the request body.
     """
-    # Get input_text and target_language from the request data
+    # Get input_text, source_language, and target_language from the request data
     input_text = request.data.get('input_text')
     source_language = request.data.get('sourceLanguage')
     target_language = request.data.get('target_language')
 
-    if not input_text or not target_language:
-        return Response({"error": "Missing input_text or target_language"}, status=status.HTTP_400_BAD_REQUEST)
+    # Validate inputs
+    if not input_text:
+        return Response({"error": "Missing input_text"}, status=status.HTTP_400_BAD_REQUEST)
+    if not target_language:
+        return Response({"error": "Missing target_language"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Default source_language to 'auto' if not provided
+    source_language = source_language or 'auto'
+
+    # Log input values
+    print(f"Input Text: {input_text}, Source Language: {source_language}, Target Language: {target_language}")
 
     try:
         # Initialize the translator
@@ -43,22 +51,3 @@ def translate(request):
         # Log error and return a response with a generic error message
         print(f"Error during translation: {e}")
         return Response({"error": "Translation failed. Please try again later."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    # # Check for missing input_text or target_language
-
-
-    # # Check if target language is supported
-    # translator = pipelines.get(target_language.lower())
-    # if not translator:
-    #     return Response({"error": f"Unsupported target language: {target_language}"}, status=status.HTTP_400_BAD_REQUEST)
-
-    # try:
-    #     # Perform translation
-    #     translation = translator(input_text)
-    #     translated_text = translation[0]['translation_text']
-    #     return Response({"translated_text": translated_text}, status=status.HTTP_200_OK)
-    
-    # except Exception as e:
-    #     # Log error and return a response with a generic error message
-    #     print(f"Error during translation: {e}")
-    #     return Response({"error": "Translation failed. Please try again later."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
