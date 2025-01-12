@@ -3,15 +3,15 @@ import axios from "axios";
 
 const HomePage = () => {
     const [inputText, setInputText] = useState("");
-    const [sourceLanguage, setSourceLanguage] = useState("English");
+    const [sourceLanguage, setSourceLanguage] = useState("Auto detect");
     const [targetLanguage, setTargetLanguage] = useState("Spanish");
     const [translatedText, setTranslatedText] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [activeTab, setActiveTab] = useState("text"); // "text" or "speech"
 
-    const languages = ["English", "Spanish", "French", "Chinese", "Hindi", "Italian", "German", "Nepali"];
-
+    const source_languages = ["Auto detect","English", "Spanish", "French", "Chinese", "Hindi", "Italian", "German", "Nepali"];
+    const target_languages = ["English", "Spanish", "French", "Chinese", "Hindi", "Italian", "German", "Nepali"];
     const handleTranslate = async () => {
         setIsLoading(true);
         setErrorMessage("");
@@ -71,7 +71,7 @@ const HomePage = () => {
                             value={sourceLanguage}
                             onChange={(e) => setSourceLanguage(e.target.value)}
                         >
-                            {languages.map((lang) => (
+                            {source_languages.map((lang) => (
                                 <option key={lang} value={lang}>
                                     {lang}
                                 </option>
@@ -86,7 +86,7 @@ const HomePage = () => {
                             value={targetLanguage}
                             onChange={(e) => setTargetLanguage(e.target.value)}
                         >
-                            {languages.map((lang) => (
+                            {target_languages.map((lang) => (
                                 <option key={lang} value={lang}>
                                     {lang}
                                 </option>
