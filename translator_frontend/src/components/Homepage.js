@@ -118,25 +118,56 @@ const HomePage = () => {
     };
     
     
-
     const handleSpeechTranslate = async () => {
-        setIsLoading(true);
-        setErrorMessage("");
-        setTranslatedText("");
-
         try {
-            const response = await axios.post("http://localhost:8000/api/speech_to_speech_translate/", {
-                target_language: targetLanguage,  // Set target language
-                sourceLanguage: sourceLanguage,  // Set source language
-            });
-            setTranslatedText(response.data.translated_text);
+            setIsLoading(true);
+            setErrorMessage("");
+    
+            // Initialize SpeechRecognition API
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = sourceLanguage;  // Set the language for recognition
+            recognition.interimResults = false;  // We want final results only
+            recognition.maxAlternatives = 1;  // Capture only the first result
+    
+            // Start listening
+            recognition.start();
+    
+            // Capture the result when speech is recognized
+            recognition.onresult = async (event) => {
+                const speechText = event.results[0][0].transcript;  // Get the recognized text
+                console.log("Recognized Speech:", speechText);  // Log recognized text
+    
+                // Send the captured text for translation
+                const response = await axios.post("http://localhost:8000/api/speech_to_speech_translate/", {
+                    input_text: speechText,  // Add recognized speech text
+                    target_language: targetLanguage,  // User-selected target language
+                    sourceLanguage: sourceLanguage,  // User-selected source language
+                });
+    
+                // Handle the translated text
+                const translatedText = response.data.translated_text;
+                setTranslatedText(translatedText);
+    
+                // Convert translated text to speech
+                const speech = new SpeechSynthesisUtterance(translatedText);
+                window.speechSynthesis.speak(speech);
+            };
+    
+            // Handle errors
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error:", event.error);
+                setErrorMessage("Speech recognition failed. Please try again.");
+                setIsLoading(false);
+            };
+    
         } catch (error) {
-            console.error("Error translating speech:", error.response || error);
-            setErrorMessage("Error translating speech. Please try again.");
-        } finally {
+            console.error("Error in speech-to-speech translation:", error);
+            setErrorMessage("Error in speech translation. Please try again.");
             setIsLoading(false);
         }
     };
+    
+    
 
     return (
         <div className="home-container">
@@ -250,9 +281,9 @@ const HomePage = () => {
                             ))}
                         </select>
                     </div>
-                    <button onClick={handleSpeechTranslate} disabled={isLoading}>
+                    {/* <button onClick={handleSpeechTranslate} disabled={isLoading}>
                         {isLoading ? "Translating..." : "Translate"}
-                    </button>
+                    </button> */}
                     {errorMessage && <div className="error-message">{errorMessage}</div>}
                     {translatedText && (
                         <div className="translated-text">
