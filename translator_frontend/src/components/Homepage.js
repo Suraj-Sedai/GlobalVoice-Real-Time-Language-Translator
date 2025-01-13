@@ -3,18 +3,40 @@ import axios from "axios";
 
 const HomePage = () => {
     const [inputText, setInputText] = useState("");
-    const [sourceLanguage, setSourceLanguage] = useState("Auto detect");
-    const [targetLanguage, setTargetLanguage] = useState("Spanish");
+    const [sourceLanguage, setSourceLanguage] = useState("auto"); // Default is auto detect
+    const [targetLanguage, setTargetLanguage] = useState("es"); // Default to Spanish
     const [translatedText, setTranslatedText] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [activeTab, setActiveTab] = useState("text"); // "text" or "speech"
-    const [speechRecognitionAvailable, setSpeechRecognitionAvailable] = useState(true);
+    const [isRecording, setIsRecording] = useState(false);
 
-    const source_languages = ["Auto detect", "English", "Spanish", "French", "Chinese", "Hindi", "Italian", "German", "Nepali"];
-    const target_languages = ["English", "Spanish", "French", "Chinese", "Hindi", "Italian", "German", "Nepali"];
+    // Available languages with full names
+    const source_languages = [
+        { code: "auto", name: "Auto Detect" },
+        { code: "en", name: "English" },
+        { code: "es", name: "Spanish" },
+        { code: "fr", name: "French" },
+        { code: "de", name: "German" },
+        { code: "it", name: "Italian" },
+        { code: "zh", name: "Chinese" },
+        { code: "hi", name: "Hindi" },
+        { code: "ja", name: "Japanese" },
+        { code: "ko", name: "Korean" },
+    ];
 
-    // Text Translation
+    const target_languages = [
+        { code: "en", name: "English" },
+        { code: "es", name: "Spanish" },
+        { code: "fr", name: "French" },
+        { code: "de", name: "German" },
+        { code: "it", name: "Italian" },
+        { code: "zh", name: "Chinese" },
+        { code: "hi", name: "Hindi" },
+        { code: "ja", name: "Japanese" },
+        { code: "ko", name: "Korean" },
+    ];
+
     const handleTranslate = async () => {
         setIsLoading(true);
         setErrorMessage("");
@@ -34,57 +56,87 @@ const HomePage = () => {
             setIsLoading(false);
         }
     };
-
-    const handleSpeechTranslation = async () => {
+    const startRecording = () => {
+        setIsRecording(true);
+        setErrorMessage("");
+        setTranslatedText("");
+    
+        // Check if SpeechRecognition is supported by the browser
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            setSpeechRecognitionAvailable(false);
-            setErrorMessage("Speech recognition is not supported in this browser.");
+            setErrorMessage("Speech Recognition is not supported by this browser.");
             return;
         }
     
         const recognition = new SpeechRecognition();
-        recognition.lang = sourceLanguage === "Auto detect" ? "en-US" : sourceLanguage;
-        recognition.interimResults = false;
-    
-        recognition.onstart = () => {
-            setErrorMessage("");
-            console.log("Speech recognition started...");
-        };
+        recognition.continuous = true;
+        recognition.interimResults = true;
     
         recognition.onresult = async (event) => {
-            const recognizedSpeech = event.results[0][0].transcript;
-            console.log("Recognized Speech:", recognizedSpeech);
-    
-            try {
-                setIsLoading(true);
-                const response = await axios.post("http://localhost:8000/api/speech_to_speech_translate/", {
-                    input_text: recognizedSpeech,
-                    target_language: targetLanguage,
-                    source_language: sourceLanguage,
-                });
-                setTranslatedText(response.data.translated_text);
-    
-                // Optional: Play translated output
-                const utterance = new SpeechSynthesisUtterance(response.data.translated_text);
-                utterance.lang = targetLanguage;
-                speechSynthesis.speak(utterance);
-            } catch (error) {
-                console.error("Error in speech translation:", error.response || error);
-                setErrorMessage("Error in speech translation. Please try again.");
-            } finally {
-                setIsLoading(false);
-            }
+            const transcript = event.results[event.resultIndex][0].transcript;
+            console.log("Recognized speech:", transcript);
+            setInputText(transcript);
         };
     
         recognition.onerror = (event) => {
             console.error("Speech recognition error:", event.error);
-            setErrorMessage(`Speech recognition error: ${event.error}`);
+            setErrorMessage("Speech recognition error. Please try again.");
         };
     
         recognition.start();
     };
     
+    const stopRecording = async () => {
+        setIsRecording(false);
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.stop();
+    
+        // Ensure that the text is sent to the backend for translation
+        if (inputText.trim() === "") {
+            setErrorMessage("No speech input detected. Please speak again.");
+            return;
+        }
+    
+        try {
+            setIsLoading(true);
+            setErrorMessage("");
+    
+            const response = await axios.post("http://localhost:8000/api/translate/", {
+                input_text: inputText,
+                source_language: sourceLanguage,
+                target_language: targetLanguage,
+            });
+    
+            setTranslatedText(response.data.translated_text);
+        } catch (error) {
+            console.error("Error translating speech:", error.response || error);
+            setErrorMessage("Error translating speech. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    
+
+    const handleSpeechTranslate = async () => {
+        setIsLoading(true);
+        setErrorMessage("");
+        setTranslatedText("");
+
+        try {
+            const response = await axios.post("http://localhost:8000/api/speech_to_speech_translate/", {
+                target_language: targetLanguage,  // Set target language
+                sourceLanguage: sourceLanguage,  // Set source language
+            });
+            setTranslatedText(response.data.translated_text);
+        } catch (error) {
+            console.error("Error translating speech:", error.response || error);
+            setErrorMessage("Error translating speech. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div className="home-container">
@@ -126,8 +178,8 @@ const HomePage = () => {
                             onChange={(e) => setSourceLanguage(e.target.value)}
                         >
                             {source_languages.map((lang) => (
-                                <option key={lang} value={lang}>
-                                    {lang}
+                                <option key={lang.code} value={lang.code}>
+                                    {lang.name}
                                 </option>
                             ))}
                         </select>
@@ -141,8 +193,8 @@ const HomePage = () => {
                             onChange={(e) => setTargetLanguage(e.target.value)}
                         >
                             {target_languages.map((lang) => (
-                                <option key={lang} value={lang}>
-                                    {lang}
+                                <option key={lang.code} value={lang.code}>
+                                    {lang.name}
                                 </option>
                             ))}
                         </select>
@@ -163,16 +215,48 @@ const HomePage = () => {
                     <h1>Speech-to-Speech Translator</h1>
                     <p className="subtitle">Speak in one language and hear the translation</p>
                     <button
-                        onClick={handleSpeechTranslation}
                         className="record-btn"
-                        disabled={isLoading}
+                        onClick={isRecording ? stopRecording : startRecording}
                     >
-                        {isLoading ? "Listening..." : "🎤 Start Speaking"}
+                        {isRecording ? "Stop Speaking" : "🎤 Start Speaking"}
+                    </button>
+                    <div className="form-group">
+                        <label htmlFor="sourceLanguage">From:</label>
+                        <select
+                            className="select"
+                            id="sourceLanguage"
+                            value={sourceLanguage}
+                            onChange={(e) => setSourceLanguage(e.target.value)}
+                        >
+                            {source_languages.map((lang) => (
+                                <option key={lang.code} value={lang.code}>
+                                    {lang.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="targetLanguage">To:</label>
+                        <select
+                            className="select"
+                            id="targetLanguage"
+                            value={targetLanguage}
+                            onChange={(e) => setTargetLanguage(e.target.value)}
+                        >
+                            {target_languages.map((lang) => (
+                                <option key={lang.code} value={lang.code}>
+                                    {lang.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <button onClick={handleSpeechTranslate} disabled={isLoading}>
+                        {isLoading ? "Translating..." : "Translate"}
                     </button>
                     {errorMessage && <div className="error-message">{errorMessage}</div>}
                     {translatedText && (
                         <div className="translated-text">
-                            <h2>Translated Output:</h2>
+                            <h2>Translated Text:</h2>
                             <p>{translatedText}</p>
                         </div>
                     )}

@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
-from googletrans import Translator
+from googletrans import Translator, LANGUAGES
 import speech_recognition as sr
 
 # Speech-to-Text Function
@@ -61,6 +61,13 @@ def speech_to_speech_translate(request):
     """
     target_language = request.data.get('target_language', 'en')  # Default to English
     source_language = request.data.get('sourceLanguage', 'auto')  # Default to auto-detect
+
+    # Validate if the languages are valid
+    if source_language not in LANGUAGES.keys():
+        return Response({"error": "Invalid source language"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if target_language not in LANGUAGES.keys():
+        return Response({"error": "Invalid target language"}, status=status.HTTP_400_BAD_REQUEST)
 
     # Step 1: Convert Speech to Text
     speech_result = speech_to_text()
