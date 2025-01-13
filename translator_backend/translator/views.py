@@ -22,10 +22,7 @@ def translate(request):
     """
     # Get input_text, source_language, and target_language from the request data
     input_text = request.data.get('input_text')
-
-    if(request.data.get('sourceLanguage')!="Auto detect"):
-        source_language = request.data.get('sourceLanguage')
-    
+    source_language = request.data.get('sourceLanguage')
     target_language = request.data.get('target_language')
 
     # Validate inputs
