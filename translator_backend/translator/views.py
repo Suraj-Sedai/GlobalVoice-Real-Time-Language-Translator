@@ -5,7 +5,6 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from googletrans import Translator, LANGUAGES
 import speech_recognition as sr
-import pyttsx3
 
 # Speech-to-Text Function
 def speech_to_text():
@@ -31,14 +30,13 @@ def speech_to_text():
         return {"success": False, "error": f"Request error: {e}"}
 
 # API Endpoint for Speech-to-Speech Translation
-
 @api_view(['POST'])
 def speech_to_speech_translate(request):
     """
     Handles speech-to-speech translation. Captures audio input, converts to text, translates, and returns translated speech.
     """
     target_language = request.data.get('target_language', 'en')  # Default to English
-    source_language = request.data.get('source_language', 'auto')  # Default to auto-detect
+    source_language = request.data.get('sourceLanguage', 'auto')  # Default to auto-detect
 
     # Validate if the languages are valid
     if source_language not in LANGUAGES.keys():
@@ -48,14 +46,12 @@ def speech_to_speech_translate(request):
         return Response({"error": "Invalid target language"}, status=status.HTTP_400_BAD_REQUEST)
 
     # Step 1: Convert Speech to Text
-    try:
-        speech_result = speech_to_text()  # Replace with your speech-to-text function
-        if not speech_result["success"]:
-            return Response({"error": speech_result["error"]}, status=status.HTTP_400_BAD_REQUEST)
-        input_text = speech_result["text"]
-        print(f"Recognized Speech: {input_text}")
-    except Exception as e:
-        return Response({"error": f"Speech recognition failed: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    speech_result = speech_to_text()
+    if not speech_result["success"]:
+        return Response({"error": speech_result["error"]}, status=status.HTTP_400_BAD_REQUEST)
+
+    input_text = speech_result["text"]
+    print(f"Recognized Speech: {input_text}")
 
     # Step 2: Translate Text
     try:
@@ -63,28 +59,21 @@ def speech_to_speech_translate(request):
         result = translator.translate(input_text, src=source_language, dest=target_language)
         translated_text = result.text
         print(f"Translated Text: {translated_text}")
-    except Exception as e:
-        return Response({"error": f"Translation failed: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    # Step 3: Convert Translated Text to Speech
-    try:
-        # Using gTTS to generate speech
+        # Step 3: Convert Translated Text to Speech
         tts = gTTS(text=translated_text, lang=target_language, slow=False)
-        audio_file = "media/translated_speech.mp3"
-        tts.save(audio_file)
+        tts.save("translated_speech.mp3")  # Save to file
 
-        # Ensure the media directory exists
-        if not os.path.exists("media"):
-            os.makedirs("media")
-
+        # Send the speech file to the frontend or play it here (You could stream the file or provide URL for frontend to play it)
         return Response({
             "translated_text": translated_text,
-            "audio_url": f"http://localhost:8000/{audio_file}"
+            "audio_url": "http://localhost:8000/media/translated_speech.mp3"
         }, status=status.HTTP_200_OK)
 
     except Exception as e:
-        print(f"Error during speech synthesis: {e}")
-        return Response({"error": "Speech generation failed. Please try again later."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        print(f"Error during translation or speech synthesis: {e}")
+        return Response({"error": "Translation or speech generation failed. Please try again later."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 # API Endpoint for Translation
 @api_view(['POST'])
