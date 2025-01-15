@@ -155,7 +155,6 @@ const HomePage = () => {
     
             // Handle errors
             recognition.onerror = (event) => {
-                console.error("Speech recognition error:", event.error);
                 setErrorMessage("Speech recognition failed. Please try again.");
                 setIsLoading(false);
             };
