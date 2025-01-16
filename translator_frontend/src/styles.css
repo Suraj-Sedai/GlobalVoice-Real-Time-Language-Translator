@@ -1,167 +1,220 @@
-/* Global Styling */
-body {
-    font-family: 'Poppins', sans-serif;
+/* Global Styles */
+* {
     margin: 0;
     padding: 0;
-    background: radial-gradient(circle, #e3f2fd, #ffffff); /* Light futuristic gradient */
-    color: #212121; /* Neutral text color */
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(145deg, #89f7fe, #66a6ff); /* Soft blue gradient */
+    color: #333;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
     overflow: hidden;
+    margin: 0;
 }
 
-/* Main Container */
 .home-container {
-    width: 90%;
+    width: 100%;
     max-width: 1000px;
-    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    padding: 40px;
     border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.5);
-    overflow: hidden;
-    position: relative;
-    animation: fadeIn 1.5s ease;
-}
-
-/* Glowing Accent Borders */
-.home-container::before {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    border-radius: 20px;
-    background: linear-gradient(45deg, #74ebd5, #acb6e5, #f8b500);
-    z-index: -1;
-    filter: blur(15px);
-    animation: glow 3s infinite alternate;
+    background: #ffffff;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    min-height: 600px; /* Ensures the box has sufficient height */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 /* Tab Selector */
 .tab-selector {
     display: flex;
-    justify-content: center;
-    gap: 10px;
-    background: linear-gradient(90deg, #74b9ff, #a29bfe);
-    padding: 10px 20px;
-    border-radius: 15px;
-    margin: 15px auto;
-    max-width: 700px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    justify-content: space-evenly;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
 }
 
 .tab-button {
-    padding: 15px 20px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #ffffff;
-    background: none;
-    border: none;
-    border-radius: 10px;
+    background: transparent;
+    border: 2px solid #66a6ff;
+    border-radius: 50px;
+    color: #66a6ff;
+    padding: 12px 25px;
+    font-size: 1.2rem;
     cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.tab-button.active {
-    background: linear-gradient(90deg, #81ecec, #74b9ff);
-    color: #212121;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    transition: background 0.3s ease, transform 0.3s ease;
+    font-weight: bold;
 }
 
 .tab-button:hover {
-    background: linear-gradient(90deg, #fd79a8, #74b9ff);
+    background: #66a6ff;
+    color: #fff;
+    transform: scale(1.05);
 }
 
-/* Content Sections */
+.tab-button.active {
+    background: #66a6ff;
+    color: #fff;
+}
+
+/* Text Tab */
 .text-tab, .speech-tab {
-    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    color: #333;
+    font-weight: 700;
     text-align: center;
-    animation: fadeIn 0.8s ease;
+    animation: fadeIn 1s ease-out;
 }
 
-/* Gradient Cards */
-.form-group {
-    margin: 20px 0;
-}
-
-textarea.text_area {
+/* Text Area */
+.text_area {
     width: 100%;
-    height: 120px;
-    padding: 15px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 15px;
-    background: linear-gradient(145deg, #ffffff, #e0e0e0);
-    box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1), inset 0 -5px 10px rgba(255, 255, 255, 0.7);
+    height: 150px;
+    padding: 20px;
+    margin: 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background: #f5f5f5;
+    color: #333;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    transition: all 0.3s ease;
     resize: none;
-    transition: box-shadow 0.3s ease;
 }
 
-textarea.text_area:focus {
-    box-shadow: 0 0 15px rgba(116, 185, 255, 0.7);
-    outline: none;
+.text_area:focus {
+    border-color: #66a6ff;
+    background: #eaeaea;
 }
 
-/* Dropdown Menus */
-select.select {
+/* Language Selectors */
+.language-selectors {
+    display: flex;
+    justify-content: space-between;
     width: 100%;
-    padding: 10px 15px;
-    font-size: 1rem;
-    border: none;
+    max-width: 500px;
+    margin-bottom: 30px;
+}
+
+.language-selectors div {
+    display: flex;
+    flex-direction: column;
+    width: 48%;
+}
+
+label {
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+select {
+    padding: 12px;
     border-radius: 10px;
-    background: linear-gradient(145deg, #ffffff, #e0e0e0);
-    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: box-shadow 0.3s ease;
-}
-
-select.select:focus {
-    box-shadow: 0 0 15px rgba(116, 185, 255, 0.7);
-    outline: none;
-}
-
-/* Action Buttons */
-button {
-    padding: 10px 30px;
+    border: 1px solid #ddd;
+    background: #f5f5f5;
+    color: #333;
     font-size: 1rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    color: #ffffff;
-    background: linear-gradient(90deg, #6c5ce7, #a29bfe);
-    border: none;
-    border-radius: 50px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.5);
+}
+
+select:hover {
+    background: #66a6ff;
+    color: #fff;
+}
+
+/* Buttons */
+button {
+    padding: 14px 30px;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    background: #66a6ff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s ease, transform 0.3s ease;
 }
 
 button:disabled {
-    background: #dfe6e9;
+    background: #aaa;
     cursor: not-allowed;
 }
 
-button:hover:not(:disabled) {
-    background: linear-gradient(90deg, #6c5ce7, #00cec9);
-    box-shadow: 0 8px 20px rgba(0, 184, 148, 0.5);
+button:hover {
+    background: #5577e6;
+    transform: scale(1.05);
 }
 
-/* Glow Effects */
-@keyframes glow {
-    0% {
-        filter: blur(5px);
-    }
-    100% {
-        filter: blur(25px);
-    }
+/* Speech Tab Specific */
+.speech-tab button {
+    background: #ff6347;
+    font-size: 1.3rem;
+    padding: 15px 25px;
 }
 
+.speech-tab button:hover {
+    background: #ff3b2d;
+}
+
+.form-group {
+    margin-top: 25px;
+    text-align: center;
+}
+
+/* Error Message */
+.error-message {
+    color: #ff4c4c;
+    font-size: 1.1rem;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Translated Text */
+.translated-text {
+    margin-top: 30px;
+    padding: 25px;
+    border-radius: 15px;
+    background: #f0f8ff;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 0.5s ease-in-out;
+    width: 100%;
+    max-width: 800px;
+}
+
+.translated-text h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.translated-text p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    text-align: center;
+    color: #333;
+}
+
+/* Animation for fade in effects */
 @keyframes fadeIn {
     0% {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(-30px);
     }
     100% {
         opacity: 1;
@@ -169,29 +222,13 @@ button:hover:not(:disabled) {
     }
 }
 
-/* Speech Tab Output */
-.speech-output {
-    margin-top: 30px;
-    padding: 20px;
-    border-radius: 10px;
-    background: linear-gradient(145deg, #ffffff, #f2f2f2);
-    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.1), inset 0 -3px 5px rgba(255, 255, 255, 0.6);
-}
-
-.record-btn {
-    padding: 12px 25px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #fff;
-    background: linear-gradient(90deg, #00b894, #00cec9);
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0, 184, 148, 0.5);
-}
-
-.record-btn:hover {
-    background: linear-gradient(90deg, #00cec9, #81ecec);
-    box-shadow: 0 8px 20px rgba(0, 184, 148, 0.7);
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
