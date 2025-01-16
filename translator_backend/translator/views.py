@@ -1,5 +1,6 @@
 from gtts import gTTS
 import os
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -28,7 +29,6 @@ def speech_to_text():
     except sr.RequestError as e:
         print(f"Could not request results from Google Speech Recognition service; {e}")
         return {"success": False, "error": f"Request error: {e}"}
-
 # API Endpoint for Speech-to-Speech Translation
 @api_view(['POST'])
 def speech_to_speech_translate(request):
@@ -41,7 +41,7 @@ def speech_to_speech_translate(request):
     # Validate if the languages are valid
     if source_language not in LANGUAGES.keys():
         return Response({"error": "Invalid source language"}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     if target_language not in LANGUAGES.keys():
         return Response({"error": "Invalid target language"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -62,12 +62,17 @@ def speech_to_speech_translate(request):
 
         # Step 3: Convert Translated Text to Speech
         tts = gTTS(text=translated_text, lang=target_language, slow=False)
-        tts.save("translated_speech.mp3")  # Save to file
 
-        # Send the speech file to the frontend or play it here (You could stream the file or provide URL for frontend to play it)
+        # Save the file to MEDIA_ROOT
+        file_name = "translated_speech.mp3"
+        file_path = os.path.join(settings.MEDIA_ROOT, file_name)
+        tts.save(file_path)
+
+        # Generate the full URL for the audio file
+        audio_url = f"{settings.MEDIA_URL}{file_name}"
         return Response({
             "translated_text": translated_text,
-            "audio_url": "http://localhost:8000/media/translated_speech.mp3"
+            "audio_url": audio_url  # Example: /media/translated_speech.mp3
         }, status=status.HTTP_200_OK)
 
     except Exception as e:
